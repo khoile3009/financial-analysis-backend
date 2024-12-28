@@ -45,8 +45,21 @@ class Dataset:
             symbols=symbols, interval=interval, period=period, start=start, end=end
         )
         self.current_index = 0
+        self.total_rows = len(self.dataframe)
+
+    def reset(self):
+        self.current_index = 0
+
+    def is_empty(self):
+        return self.total_rows == 0
+
+    def has_next(self) -> bool:
+        return self.current_index < self.total_rows
 
     def next(self) -> pd.Series:
+        if self.current_index >= self.total_rows:
+            return None
+
         row = self.dataframe.iloc[self.current_index]
         self.current_index += 1
         return DataPoint(row)
@@ -54,13 +67,20 @@ class Dataset:
     @classmethod
     def get_dataset(
         cls,
-        symbol: str,
+        symbols: List[str],
         interval: str,
         period: str,
         start: str | datetime = None,
         end: str | datetime = None,
     ) -> pd.DataFrame:
-        return None
+        try:
+            file_name = cls.get_dataset_file_name(symbols, interval, period)
+            dataframe = pd.read_csv(file_name, index_col=["Price", "Ticker"])
+            
+            print(dataframe)
+        except:
+            dataframe = cls.download_dataset(symbols, interval, period)
+        return dataframe
 
     @classmethod
     def query_dataset(
@@ -85,8 +105,28 @@ class Dataset:
         dataframe = yf.download(
             tickers=symbols, interval=interval, period=period, start=start, end=end
         )
+        cls.store_dataset(symbols, interval, period, dataframe)
         return dataframe
 
+    @classmethod
+    def store_dataset(
+        cls,
+        symbols: List[str],
+        interval: str,
+        period: str,
+        dataframe: pd.DataFrame
+    ):
+        file_name = cls.get_dataset_file_name(symbols, interval, period)
+        dataframe.to_csv(file_name)
+
+    @classmethod
+    def get_dataset_file_name(
+        cls,
+        symbols: List[str],
+        interval: str,
+        period: str
+    ):
+        return f"datas/{'_'.join(symbols)}_{interval}_{period}.csv"
 
 if __name__ == "__main__":
     dataset = Dataset(symbols=["PLTR"], interval="15m", period="5d")
