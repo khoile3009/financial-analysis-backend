@@ -41,7 +41,7 @@ class Dataset:
         start: str | datetime = None,
         end: str | datetime = None,
     ):
-        self.dataframe = Dataset.download_dataset(
+        self.dataframe = Dataset.get_dataset(
             symbols=symbols, interval=interval, period=period, start=start, end=end
         )
         self.current_index = 0
@@ -75,9 +75,7 @@ class Dataset:
     ) -> pd.DataFrame:
         try:
             file_name = cls.get_dataset_file_name(symbols, interval, period)
-            dataframe = pd.read_csv(file_name, index_col=["Price", "Ticker"])
-            
-            print(dataframe)
+            dataframe = pd.read_pickle(file_name)
         except:
             dataframe = cls.download_dataset(symbols, interval, period)
         return dataframe
@@ -117,7 +115,7 @@ class Dataset:
         dataframe: pd.DataFrame
     ):
         file_name = cls.get_dataset_file_name(symbols, interval, period)
-        dataframe.to_csv(file_name)
+        dataframe.to_pickle(file_name)
 
     @classmethod
     def get_dataset_file_name(
@@ -126,7 +124,7 @@ class Dataset:
         interval: str,
         period: str
     ):
-        return f"datas/{'_'.join(symbols)}_{interval}_{period}.csv"
+        return f"datas/{'_'.join(symbols)}_{interval}_{period}.pkl"
 
 if __name__ == "__main__":
     dataset = Dataset(symbols=["PLTR"], interval="15m", period="5d")
