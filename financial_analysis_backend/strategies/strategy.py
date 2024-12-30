@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, List, Optional
-
-import pandas as pd
-
-from financial_analysis_backend.dataset import DataPoint
+from financial_analysis_backend.data_type import DataPoint
 from enum import Enum
 
 class OrderType(Enum):

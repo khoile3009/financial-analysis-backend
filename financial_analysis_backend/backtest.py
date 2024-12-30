@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, List
 from financial_analysis_backend.account import Account
-from financial_analysis_backend.dataset import DataPoint, Dataset
+from financial_analysis_backend.dataset import Dataset
 from financial_analysis_backend.strategies.buy_and_hold import BuyAndHold
 from financial_analysis_backend.strategies.strategy import DoNothing, Order, OrderStatus, Strategy
 
@@ -34,7 +34,6 @@ class Backtest:
             if isinstance(orders, List) and len(orders) > 0:
                 self.order_backlog += orders
             self.resolve_orders(data_point)
-        print(self.account)
         self.report.end_balance = self.account.total_value(data_point)
         return self.report
 

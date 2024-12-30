@@ -1,5 +1,5 @@
 from typing import Dict, List
-from financial_analysis_backend.dataset import DataPoint
+from financial_analysis_backend.data_type import DataPoint
 from financial_analysis_backend.strategies.strategy import Order, OrderType, Strategy
 
 

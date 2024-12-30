@@ -2,33 +2,9 @@ from datetime import datetime
 from typing import List
 import pandas as pd
 import yfinance as yf
-import numpy as np
 
-
-class DataPoint:
-    def __init__(self, row: pd.Series):
-        self.row = row
-
-    def timestamp(self) -> np.datetime64:
-        return self.row.name
-
-    def close(self, symbol: str) -> float:
-        return self.row.Close[symbol]
-
-    def open(self, symbol: str) -> float:
-        return self.row.Open[symbol]
-
-    def high(self, symbol: str) -> float:
-        return self.row.High[symbol]
-
-    def low(self, symbol: str) -> float:
-        return self.row.Low[symbol]
-
-    def volume(self, symbol: str) -> float:
-        return self.row.Volume[symbol]
-
-    def adjusted_close(self, symbol: str) -> float:
-        return self.row["Adj Close", symbol]
+from financial_analysis_backend.data_type import DataPoint
+from financial_analysis_backend.metrics.metric import Metric
 
 
 class Dataset:
@@ -46,7 +22,11 @@ class Dataset:
         )
         self.current_index = 0
         self.total_rows = len(self.dataframe)
+        self.subscribed_metrics = []
 
+    def subscribe(self, metric: Metric):
+        self.subscribed_metrics.append(metric)
+        
     def reset(self):
         self.current_index = 0
 
@@ -62,7 +42,12 @@ class Dataset:
 
         row = self.dataframe.iloc[self.current_index]
         self.current_index += 1
-        return DataPoint(row)
+        data_point = DataPoint(row)
+        
+        # Update subscribed metrics
+        for metric in self.subscribed_metrics:
+            metric.next(data_point)
+        return data_point
 
     @classmethod
     def get_dataset(

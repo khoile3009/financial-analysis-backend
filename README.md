@@ -4,5 +4,7 @@ Backend for financial analysis platform
 
 ## Roadmaps
 
-[ ] Candlestick only dataset. Basic strategy done
-[ ] Longer range backtest period by fetching all yfinance
+[x] Candlestick only dataset. Basic strategy done.
+[ ] Rolling metric like SMA
+[ ] Metric is chainable
+[ ] Longer range backtest period by fetching all yfinance.
