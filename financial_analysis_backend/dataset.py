@@ -24,11 +24,14 @@ class Dataset:
         self.total_rows = len(self.dataframe)
         self.subscribed_metrics = []
 
-    def subscribe(self, metric: Metric):
+    def subscribe(self, metric: Metric | List[Metric]):
+        if isinstance(metric, List):
+            self.subscribed_metrics += metric
         self.subscribed_metrics.append(metric)
         
     def reset(self):
         self.current_index = 0
+        self.subscribed_metrics = []
 
     def is_empty(self):
         return self.total_rows == 0

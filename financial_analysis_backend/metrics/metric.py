@@ -9,9 +9,14 @@ class Metric(ABC):
         self.data_points = []
         self.wrapped_metrics = wrapped_metrics or {}
         self.values = []
+        self.last_timestamp = None
 
     def next(self, data_point: DataPoint):
+        # Early breaking, essensially an AST to make sure everything only next once
+        if self.last_timestamp == data_point.timestamp():
+            return
         self.data_points.append(data_point)
+        self.last_timestamp = data_point.timestamp()
         for _, metric in self.wrapped_metrics.items():
             metric.next(data_point)
         self.values.append(self.compute_value())
