@@ -6,6 +6,6 @@ Backend for financial analysis platform
 
 [x] Candlestick only dataset. Basic strategy done.
 [ ] Metric does get next twice per iteration
-[ ] Rolling metric like SMA
+[x] Rolling metric like SMA
 [x] Metric is chainable
 [ ] Longer range backtest period by fetching all yfinance.

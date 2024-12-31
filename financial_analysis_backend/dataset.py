@@ -24,10 +24,12 @@ class Dataset:
         self.total_rows = len(self.dataframe)
         self.subscribed_metrics = []
 
-    def subscribe(self, metric: Metric | List[Metric]):
-        if isinstance(metric, List):
-            self.subscribed_metrics += metric
-        self.subscribed_metrics.append(metric)
+    def subscribe(self, *args):
+        for metric in args:
+            if not isinstance(metric, Metric):
+                raise TypeError("metrics can either be Metric or list of Metric")
+
+            self.subscribed_metrics.append(metric)
         
     def reset(self):
         self.current_index = 0

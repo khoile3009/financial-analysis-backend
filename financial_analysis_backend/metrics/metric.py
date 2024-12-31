@@ -45,3 +45,15 @@ class Power(Metric):
 
     def compute_value(self):
         return self.wrapped_metrics["base"].value ** self.hat
+
+class SMA(Metric):
+    def __init__(self, metric: Metric, period: int):
+        self.period = period
+        super().__init__(wrapped_metrics={"metric": metric})
+
+    def compute_value(self):
+        if len(self.wrapped_metrics["metric"].values) < self.period:
+            return None
+        
+        avg = sum(self.wrapped_metrics["metric"].values[-self.period:]) / self.period
+        return avg
