@@ -23,7 +23,35 @@ class Metric(ABC):
 
     @property
     def value(self):
+        if len(self.values) == 0:
+            raise ValueError("There is no value to get")
         return self.values[-1]
+
+    def crossover(self, metric: "Metric") -> bool:
+        """
+        Return  0 if no crossover happen
+                1 if crossover and this metric is larger now
+                -1 if crossover happened and this metric is smaller now 
+        """
+        prev_value = self.previous_value
+        target_prev_value = metric.previous_value
+
+        if prev_value is None or target_prev_value is None or self.value is None or metric.value is None:
+            return 0
+        
+        if prev_value - target_prev_value > 0 and self.value - metric.value <= 0:
+            return 1
+    
+        if prev_value - target_prev_value < 0 and self.value - metric.value >= 0:
+            return -1
+        return 0
+    
+    @property
+    def previous_value(self) -> float | None:
+        if len(self.values) < 2:
+            return None
+        
+        return self.values[-2]
 
     @abstractmethod
     def compute_value(self):

@@ -55,6 +55,10 @@ class Strategy(ABC):
     def set_account(self, account):
         self.account = account
 
+    @property
+    def metrics(self):
+        return []
+
 class DoNothing(Strategy):
     def next(self, data_point):
         return []

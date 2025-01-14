@@ -24,10 +24,13 @@ class Dataset:
         self.total_rows = len(self.dataframe)
         self.subscribed_metrics = []
 
-    def subscribe(self, *args):
-        for metric in args:
+    def subscribe(self, metrics: List[Metric]):
+        if not isinstance(metrics, List):
+            raise TypeError("Metric is not a List")
+        
+        for metric in metrics:
             if not isinstance(metric, Metric):
-                raise TypeError("metrics can either be Metric or list of Metric")
+                raise TypeError("metrics can only be a list of Metrics")
 
             self.subscribed_metrics.append(metric)
         
@@ -117,7 +120,7 @@ class Dataset:
         return f"datas/{'_'.join(symbols)}_{interval}_{period}.pkl"
 
 if __name__ == "__main__":
-    dataset = Dataset(symbols=["PLTR"], interval="15m", period="5d")
+    dataset = Dataset(symbols=["PLTR"], interval="1h", period="5y")
     print(dataset.next().timestamp())
     print(dataset.next().timestamp())
     print(dataset.next().timestamp())

@@ -3,6 +3,7 @@ from typing import Dict, List
 from financial_analysis_backend.account import Account
 from financial_analysis_backend.dataset import Dataset
 from financial_analysis_backend.strategies.buy_and_hold import BuyAndHold
+from financial_analysis_backend.strategies.moving_average_crossover import MovingAverageCrossover
 from financial_analysis_backend.strategies.strategy import DoNothing, Order, OrderStatus, Strategy
 
 @dataclass
@@ -20,6 +21,7 @@ class Backtest:
         self.report = None
         self.account = Account(balance=initial_balance, porfolio={})
         self.strategy.set_account(self.account)
+        self.dataset.subscribe(self.strategy.metrics)
         self.order_backlog: List[Order] = []
 
     def run(self):
@@ -55,14 +57,21 @@ class Backtest:
 
 if __name__ == "__main__":
     do_nothing = DoNothing()
-    dataset = Dataset(symbols=["PLTR"], interval="15m", period="5d")
+    dataset = Dataset(symbols=["PLTR"], interval="1d", period="5y")
     backtest = Backtest(do_nothing, dataset)
     backtest_report = backtest.run()
     print(backtest_report)
 
     # Buy and hold
     buy_and_hold = BuyAndHold("PLTR")
-    dataset = Dataset(symbols=["PLTR"], interval="15m", period="5d")
+    dataset.reset()
     backtest = Backtest(buy_and_hold, dataset)
+    backtest_report = backtest.run()
+    print(backtest_report)
+
+    # SMA Crossover
+    sma_crosover = MovingAverageCrossover("PLTR", 100, 50)
+    dataset.reset()
+    backtest = Backtest(sma_crosover, dataset)
     backtest_report = backtest.run()
     print(backtest_report)
